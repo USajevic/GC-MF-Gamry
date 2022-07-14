@@ -1,0 +1,44 @@
+import os
+import numpy as np
+
+def EIS(M):
+    time_EIS={} 
+    data_EIS={}
+    minima_EIS={} 
+    file_names=[] 
+    
+    
+    def findfirstmin(X,Y):
+        idx=np.argsort(X)
+        X,Y=X[idx],Y[idx]
+        Ymin=[[Y[0],X[0]]]
+        for i in range(len(X)-2):   
+           if Y[i+2]>=Y[i+1] and Y[i+1]<=Y[i]:
+                   Ymin.append([Y[i+1],X[i+1]]) 
+        return Ymin
+    
+      
+    
+    for file in os.listdir():                          #Reads all data files, puts all data in the 
+        if file.endswith('.DTA'):
+            with open(file, 'r') as f:
+                raw_data = f.readlines()
+                tag=raw_data[1].split('\t')[1].split('\n')[0] #kind of experiment
+                if tag=="EISPOT":          #Electrochemical Impedance spectroscopy
+                    file_names.append(file)
+                    a = raw_data[4].split('\t')[2].split(':')
+                    time_EIS['{}'.format(file)] = int(int(a[2]) + int(a[1])*60 + int(a[0])* 3600)   
+                    for keyword in range(len(raw_data)-1):
+                        if raw_data[keyword][0:6] == 'ZCURVE':  #Find where the real experiment data starts
+                            begin = keyword + 3
+                    EIS_data = raw_data[begin:]                        #EIS data starts at line 54
+                    t = [[] for _ in range(0,11)]
+                    for i in range(len(EIS_data )):         
+                        a1 = EIS_data [i].split('\t')
+                        for k in range(1,11):
+                            t[k].append(float(a1[k]))
+                    minima_EIS['{}'.format(file)]= findfirstmin(np.array(t[4]), np.array(t[5])*-1)[1]      #0-empty, 1-Pt, 2-Time, 3-Freq, 4-Zreal, 5-Zimag
+                    data_EIS['{}'.format(file)] = t                         #6-Zsig, 7-Zmod, 8-Zphz, 9-Idc, 10-Vdc, 11-IERange
+     
+        ret=minima_EIS if M=1 else  ret=data_EIS 
+        return []  
