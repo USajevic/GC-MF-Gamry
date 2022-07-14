@@ -35,7 +35,8 @@ for file in os.listdir():                           #Reads all data files, puts 
             if file.startswith('EIS'):          #Electrochemical Impedance spectroscopy
                 c = f.readlines()
                 a = c[4].split('\t')[2].split(':')
-                tEIS['{}'.format(file)] = int(int(a[2]) + int(a[1])*60 + int(a[0])* 3600)   
+                a2 = c[3].split('\t')[2].split('/')
+                tEIS['{}'.format(file)] = int(int(a[2]) + int(a[1])*60 + int(a[0])* 3600 +int(int(a2[1]) * 86400))   
                 for iii in range(len(c)-1):
                     if c[iii][0:6] == 'ZCURVE':
                         s1 = iii + 3
@@ -49,7 +50,8 @@ for file in os.listdir():                           #Reads all data files, puts 
             elif file.startswith('CA'):         #Chronoamperommetry
                 c = f.readlines()
                 a = c[4].split('\t')[2].split(':')
-                tCA['{}'.format(file)] = int(int(a[2]) + int(a[1])*60 + int(a[0])* 3600)
+                a2 = c[3].split('\t')[2].split('/')
+                tCA['{}'.format(file)] = int(int(a[2]) + int(a[1])*60 + int(a[0])* 3600 + int(int(a2[1]) * 86400))
                 for iii in range(len(c)-1):
                     if c[iii][0:5] == 'CURVE':
                         s1 = iii + 3
@@ -63,7 +65,8 @@ for file in os.listdir():                           #Reads all data files, puts 
             elif file.startswith('CV'):         #Cyclic voltammetry
                 c = f.readlines()
                 a = c[4].split('\t')[2].split(':')
-                tCV['{}'.format(file)] = int(int(a[2]) + int(a[1])*60 + int(a[0])* 3600)
+                a2 = c[3].split('\t')[2].split('/')
+                tCV['{}'.format(file)] = int(int(a[2]) + int(a[1])*60 + int(a[0])* 3600 + int(int(a2[1]) * 86400))
                 for iii in range(len(c)-1):
                     if c[iii][0:6] == 'CURVE1':
                         s1 = iii + 3
@@ -80,7 +83,8 @@ for file in os.listdir():                           #Reads all data files, puts 
             elif file.startswith('CP'):         #Chronopotentiommetry
                 c = f.readlines()
                 a = c[4].split('\t')[2].split(':')
-                tCP['{}'.format(file)] = int(int(a[2]) + int(a[1])*60 + int(a[0])* 3600)
+                a2 = c[3].split('\t')[2].split('/')
+                tCP['{}'.format(file)] = int(int(a[2]) + int(a[1])*60 + int(a[0])* 3600 + int(int(a2[1]) * 86400))
                 for iii in range(len(c)-1):
                     if c[iii][0:5] == 'CURVE':
                         s1 = iii + 3
@@ -94,7 +98,7 @@ for file in os.listdir():                           #Reads all data files, puts 
     if file.startswith('plotdata'):             #Mass flow
         with open(file, 'r') as f:
             c = f.readlines()[0:]                                                      #MF data starts instantly
-            tMF['{}'.format(file)] = int(int(f.name[21:23]) + int(f.name[19:21]) * 60 + int(f.name[17:19]) * 3600)            
+            tMF['{}'.format(file)] = int(int(f.name[21:23]) + int(f.name[19:21]) * 60 + int(f.name[17:19]) * 3600 + int(int(f.name[15:17])) * 86400)            
             t = [[] for _ in range(0,5)]
             for i in range(len(c)-1):
                 a1  = c[i].split(';')                               
@@ -105,7 +109,8 @@ for file in os.listdir():                           #Reads all data files, puts 
         with open(file, 'r') as f:
             c = f.readlines()            
             a = c[1].split(',')
-            tGC['{}'.format(file)] = int(int(a[3][-10:-8])*3600 + int(a[3][-7:-5])*60 + int(a[3][-4:-2]))
+            a2 = a[3].split('/')
+            tGC['{}'.format(file)] = int(int(a[3][-10:-8])*3600 + int(a[3][-7:-5])*60 + int(a[3][-4:-2]) + int(int(a2[1]) * 86400))
             if str((c[6].split(','))[3][1]) == 'B':
                 for i in range(26,40):                                   #GC data starts at 26 and ends in dynamic line
                     if c[i][0:5] == '"",""' and c[i+1][0:5] == '"",""':
@@ -172,6 +177,7 @@ if dEIS != {}:
     for i, c in zip(range(len(dEIS)), sns.color_palette()):
         partEIS_fig, partEIS_ax = plt.subplots()
         EISstarttime = list(tEIS.values())[i]                       #Obtain universal time
+        print(EISstarttime)
         EIScurrent = list(dEIS.values())[i][9]                      #Idc
         EIStime = list(dEIS.values())[i][2]                         #Time
         
@@ -592,7 +598,7 @@ if dGCA != {}:
 
 
     
-"""Display results in a table form in .txt and .xlsx file"""
+#Display results in a table form in .txt and .xlsx file
 if dGCA != {}:  
     
     print(tabulate(Tab_values, headers=Tab_headers))
