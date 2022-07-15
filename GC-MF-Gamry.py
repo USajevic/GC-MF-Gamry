@@ -392,10 +392,10 @@ if dGCA != {}:
     nCO =  2     # number of electrons
     nHYD = 2     # number of electrons
     
-    cETH = 0.0003701        #calibration factor Ethylene
-    cHYD = 0.00680013       #calibration factor Hydrogen
-    cMET = 0.00068207       #calibration factor Methanol
-    cCO  = 0.00069638       #calibration factor Carbon monoxide
+    cETH = 0.000362576                 # Old value: 0.0003701        #calibration factor Ethylene            
+    cHYD = 0.007054425                 # Old value: 0.00680013       #calibration factor Hydrogen            
+    cMET = 0.000715923                 # Old value: 0.00068207       #calibration factor Methanol            
+    cCO  = 0.000707912                 # Old value: 0.00069638       #calibration factor Carbon monoxide     
     
     
     "GC column A"
